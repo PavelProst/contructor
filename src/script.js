@@ -1,20 +1,6 @@
-const model = [
-    {
-        type: 'title',
-        value: 'Hello from JS!',
-    },
-    {
-        type: 'text',
-        value: 'HLorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos, quia.',
-    },
-    {
-        type: 'columns',
-        value: ['1111111', '2222222', '333333333', '444444'],
-    },
-    {
-        type: 'image', value: './assets/slider1.png',
-    },
-]
+import {model} from './model';
+import {title, text, columns, image} from "./templates";
+import './styles/style.css'
 
 const $site = document.querySelector('#site');
 
@@ -34,29 +20,3 @@ model.forEach(block => {
 
 });
 
-function title(block) {
-    return `<div class="row">
-            <div class="col-sm">
-                <h1>${block.value}</h1>
-            </div>
-        </div>
-       `
-}
-
-function text(block) {
-    return `<div class="row">
-            <div class="col-sm">
-                <p>${block.value}</p>
-            </div>
-        </div>
-        `
-}
-
-function columns(block) {
-    const html = block.value.map(item => `<div class="col-sm">${item}</div>`)
-    return `<div class="row">${html.join('')}</div>`
-}
-
-function image(block) {
-    return `<div class="row"><div class="col-sm"><img src="${block.value}" width="100px" height="100px"/></div></div>`
-}
