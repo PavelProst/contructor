@@ -1,12 +1,9 @@
 import {model} from './model';
-//import {templates} from "./templates";
+import {App} from './classes/App'
 import './styles/style.css'
 
-const $site = document.querySelector('#site');
+new App(model);
 
-model.forEach(block => {
-    //const toHtml = templates[block.type];
-        $site.insertAdjacentHTML('beforeend', block.toHtml());
 
-});
+
 

@@ -128,6 +128,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.row = row;
 exports.col = col;
 exports.css = css;
+exports.block = block;
 
 function row(content, styles) {
   return "<div class='row' style=\"".concat(styles, "\">").concat(content, "</div>");
@@ -148,9 +149,17 @@ function css() {
   //         return `${key}: ${styles[key]}`
   //     })
   //     return array.join(';');
-  return Object.keys(styles).map(function (key) {
+  if (typeof styles === 'string') return styles;
+
+  var string = function string(key) {
     return "".concat(key, ": ").concat(styles[key]);
-  }).join(';');
+  };
+
+  return Object.keys(styles).map(string).join(';');
+}
+
+function block(type) {
+  return "\n    <form name=\"".concat(type, "\">\n      <h5>").concat(type, "</h5>\n      <div class=\"form-group\">\n        <input class=\"form-control form-control-sm\" name=\"value\" placeholder=\"value\">\n      </div>\n      <div class=\"form-group\">\n        <input class=\"form-control form-control-sm\" name=\"styles\" placeholder=\"styles\">\n      </div>\n      <button type=\"submit\" class=\"btn btn-primary btn-sm\">\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C</button>\n    </form>\n    <hr />\n  ");
 }
 },{}],"classes/Block.js":[function(require,module,exports) {
 "use strict";
@@ -329,7 +338,152 @@ var model = [new _Block.TitleBlock('Конструктор Класс', {
 //},
 ];
 exports.model = model;
-},{"./assets/slider1.png":"assets/slider1.png","./classes/Block":"classes/Block.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+},{"./assets/slider1.png":"assets/slider1.png","./classes/Block":"classes/Block.js"}],"classes/Site.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Site = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Site = /*#__PURE__*/function () {
+  function Site(selector) {
+    _classCallCheck(this, Site);
+
+    this.$el = document.querySelector(selector);
+  }
+
+  _createClass(Site, [{
+    key: "render",
+    value: function render(model) {
+      var _this = this;
+
+      this.$el.innerHTML = '';
+      model.forEach(function (block) {
+        _this.$el.insertAdjacentHTML('beforeend', block.toHtml());
+      });
+    }
+  }]);
+
+  return Site;
+}();
+
+exports.Site = Site;
+},{}],"classes/Sitebar.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Sitebar = void 0;
+
+var _utilis = require("../utilis");
+
+var _Block = require("../classes/Block");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Sitebar = /*#__PURE__*/function () {
+  function Sitebar(selector, updateCallback) {
+    _classCallCheck(this, Sitebar);
+
+    this.$el = document.querySelector(selector);
+    this.update = updateCallback;
+    this.init();
+  }
+
+  _createClass(Sitebar, [{
+    key: "init",
+    value: function init() {
+      this.$el.insertAdjacentHTML('afterbegin', this.template);
+      this.$el.addEventListener('submit', this.addBlock.bind(this));
+    }
+  }, {
+    key: "addBlock",
+    value: function addBlock(event) {
+      event.preventDefault();
+      var type = event.target.name;
+      var value = event.target.value.value;
+      var styles = event.target.styles.value;
+      var newBlock = type === 'text' ? new _Block.TextBlock(value, {
+        styles: styles
+      }) : new _Block.TitleBlock(value, {
+        styles: styles
+      });
+      this.update(newBlock);
+      event.target.value.value = '';
+      event.target.styles.value = '';
+    }
+  }, {
+    key: "template",
+    get: function get() {
+      return [(0, _utilis.block)('text'), (0, _utilis.block)('title')].join('');
+    }
+  }]);
+
+  return Sitebar;
+}();
+
+exports.Sitebar = Sitebar;
+},{"../utilis":"utilis.js","../classes/Block":"classes/Block.js"}],"classes/App.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.App = void 0;
+
+var _Site = require("./Site");
+
+var _Sitebar = require("./Sitebar");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var App = /*#__PURE__*/function () {
+  function App(model) {
+    _classCallCheck(this, App);
+
+    this.model = model;
+    this.init();
+  }
+
+  _createClass(App, [{
+    key: "init",
+    value: function init() {
+      var _this = this;
+
+      var site = new _Site.Site('#site');
+      site.render(this.model);
+
+      var updateCallback = function updateCallback(newBlock) {
+        _this.model.push(newBlock);
+
+        site.render(_this.model);
+      };
+
+      new _Sitebar.Sitebar('#panel', updateCallback);
+    }
+  }]);
+
+  return App;
+}();
+
+exports.App = App;
+},{"./Site":"classes/Site.js","./Sitebar":"classes/Sitebar.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {
@@ -406,16 +560,12 @@ module.hot.accept(reloadCSS);
 
 var _model = require("./model");
 
+var _App = require("./classes/App");
+
 require("./styles/style.css");
 
-//import {templates} from "./templates";
-var $site = document.querySelector('#site');
-
-_model.model.forEach(function (block) {
-  //const toHtml = templates[block.type];
-  $site.insertAdjacentHTML('beforeend', block.toHtml());
-});
-},{"./model":"model.js","./styles/style.css":"styles/style.css"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+new _App.App(_model.model);
+},{"./model":"model.js","./classes/App":"classes/App.js","./styles/style.css":"styles/style.css"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -443,7 +593,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61325" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62485" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
