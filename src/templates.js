@@ -1,26 +1,28 @@
-export function title(block) {
-    return `<div class="row">
-            <div class="col-sm">
-                <h1>${block.value}</h1>
-            </div>
-        </div>
-       `
+import {row,col,css} from './utilis';
+
+function title(block) {
+    const {tag = 'h1', styles} = block.options;
+    return row(col(`<${tag}>${block.value}</${tag}>`),css(styles));
+};
+
+function text(block) {
+    const {styles} = block.options;
+    return row(col(`<p>${block.value}</p>`), css(styles));
 }
 
-export function text(block) {
-    return `<div class="row">
-            <div class="col-sm">
-                <p>${block.value}</p>
-            </div>
-        </div>
-        `
+function columns(block) {
+    const {styles} = block.options;
+    const html = block.value.map(col).join('');
+    return row(html, css(styles));
 }
 
-export function columns(block) {
-    const html = block.value.map(item => `<div class="col-sm">${item}</div>`)
-    return `<div class="row">${html.join('')}</div>`
+function image(block) {
+    return row(col(`<img src="${block.value}" width="100px" height="100px"/>`));
 }
 
-export function image(block) {
-    return `<div class="row"><div class="col-sm"><img src="${block.value}" width="100px" height="100px"/></div></div>`
+export const templates = {
+    title,
+    text,
+    image,
+    columns,
 }
